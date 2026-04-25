@@ -2,6 +2,8 @@
 
 A React + TypeScript + Vite application for managing live-streaming events through a structured lifecycle.
 
+**Live demo:** [https://livdot-assessment.vercel.app/events](https://livdot-assessment.vercel.app/events)
+
 ## Setup & Running
 
 ### Prerequisites
