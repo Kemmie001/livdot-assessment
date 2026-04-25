@@ -3,10 +3,10 @@ import { Button } from "@/views/shadcn/button";
 import { Skeleton } from "@/views/shadcn/skeleton";
 import { EventCard } from "./components/EventCard";
 import { CreateEventModal } from "./components/CreateEventModal";
-import { useEventListViewModel } from "./useEventList";
+import { useEventList } from "./useEventList";
 
 export const EventListView = () => {
-  const { events, isLoading, isError, openModal } = useEventListViewModel();
+  const { events, isLoading, isError, openModal } = useEventList();
 
   return (
     <div>

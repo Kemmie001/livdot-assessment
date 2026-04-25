@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+import { ChevronLeft } from "lucide-react";
 import { Skeleton } from "@/views/shadcn/skeleton";
 import { EventLifecycleTracker } from "./components/EventLifecycleTracker";
 import { OperationalStatusBanner } from "./components/OperationalStatusBanner";
@@ -5,7 +7,9 @@ import { EventActionPanel } from "./components/EventActionPanel";
 import { ReadinessChecklist } from "./components/ReadinessChecklist";
 import { ReadinessStatusPanel } from "./components/ReadinessStatusPanel";
 import { EventPreviewCard } from "./components/EventPreviewCard";
-import { useEventDashboardViewModel } from "./useEventDashboard";
+import { LiveStreamSimulator } from "./components/LiveStreamSimulator";
+import { ReplayPlayer } from "./components/ReplayPlayer";
+import { THUMB_INPUT_ID, useEventDashboard } from "./useEventDashboard";
 
 export const EventDashboardView = () => {
   const {
@@ -20,18 +24,18 @@ export const EventDashboardView = () => {
     fulfill,
     revoke,
     isLive,
+    isReplayAvailable,
     operationalStatus,
     showChecklist,
-    config,
+    showReadinessPanel,
     thumbnailInputRef,
-    THUMB_INPUT_ID,
     thumbnailPreview,
     price,
     handleThumbnailSelect,
     handleThumbnailClear,
     handleThumbnailFileChange,
     setPrice,
-  } = useEventDashboardViewModel();
+  } = useEventDashboard();
 
   if (isLoading) {
     return (
@@ -52,34 +56,48 @@ export const EventDashboardView = () => {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div>
-        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-0.5">
-          {event.id.slice(0, 7).toUpperCase()}
-        </p>
-        <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase">
-          Event Status
-        </p>
+      <div className="flex items-center">
+        <Link
+          to="/events"
+          className="w-fit flex text-nowrap items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          All Events
+        </Link>
+        <div className="text-center w-full">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-0.5">
+            {event.id.slice(0, 7).toUpperCase()}
+          </p>
+          <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase">
+            Event Status
+          </p>
+        </div>
       </div>
 
-      {/* Lifecycle tracker */}
       <div className="rounded-lg border bg-card px-6 py-5">
         <EventLifecycleTracker currentState={displayState} />
       </div>
 
-      {isLive && (
-        <OperationalStatusBanner config={config} status={operationalStatus} />
-      )}
+      {isLive && <OperationalStatusBanner status={operationalStatus} />}
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
+      {isLive && <LiveStreamSimulator title={event.title} />}
+
+      {isReplayAvailable && <ReplayPlayer />}
+
+      <div
+        className={
+          showReadinessPanel
+            ? "grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4"
+            : "w-full"
+        }
+      >
         <EventPreviewCard
           event={event}
           thumbnailPreview={thumbnailPreview}
           price={price}
           onThumbnailClick={handleThumbnailSelect}
         />
-        {report && (
+        {showReadinessPanel && report && (
           <ReadinessStatusPanel
             report={report}
             hasThumbnail={thumbnailPreview !== null}
@@ -87,7 +105,6 @@ export const EventDashboardView = () => {
         )}
       </div>
 
-      {/* Action row */}
       <EventActionPanel
         action={primaryAction}
         isPending={isPending}
@@ -95,7 +112,6 @@ export const EventDashboardView = () => {
         onTransition={transition}
       />
 
-      {/* Controls strip */}
       {showChecklist && report && (
         <ReadinessChecklist
           report={report}
@@ -104,13 +120,10 @@ export const EventDashboardView = () => {
           thumbnailPreview={thumbnailPreview}
           onThumbnailSelect={handleThumbnailSelect}
           onThumbnailClear={handleThumbnailClear}
-          onThumbnailFileChange={handleThumbnailFileChange}
-          thumbnailInputId={THUMB_INPUT_ID}
           onPriceSet={setPrice}
         />
       )}
 
-      {/* Hidden file input controlled by ref */}
       <input
         ref={thumbnailInputRef}
         id={THUMB_INPUT_ID}

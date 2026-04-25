@@ -1,22 +1,14 @@
-import { type LucideIcon } from "lucide-react";
 import { Alert } from "@/views/shadcn/alert";
 import { cn } from "@/lib/utils";
+import { operationalConfig } from "@/views/event-dashboard/useEventDashboard";
 import type { OperationalStatus } from "@/data/services/operationalService";
 
 type Props = {
   status: OperationalStatus;
-  config: {
-    [key: string]: {
-      icon: LucideIcon;
-      message: string;
-      className: string;
-      iconClass: string;
-    };
-  };
 };
 
-export const OperationalStatusBanner = ({ status, config }: Props) => {
-  const { icon: Icon, message, className, iconClass } = config[status];
+export const OperationalStatusBanner = ({ status }: Props) => {
+  const { icon: Icon, message, className, iconClass } = operationalConfig[status];
 
   return (
     <Alert className={cn("flex items-center gap-3", className)}>

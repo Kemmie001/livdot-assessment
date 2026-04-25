@@ -35,9 +35,9 @@ export const EventLifecycleTracker = ({ currentState }: Props) => {
         </div>
 
         <div className="flex gap-1">
-          {ORDERED_STATES.map((_, index) => (
+          {ORDERED_STATES.map((state, index) => (
             <div
-              key={index}
+              key={state}
               className={cn(
                 "h-1 flex-1 rounded-full transition-all duration-300",
                 index < currentIndex

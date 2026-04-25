@@ -3,22 +3,21 @@ import { EventStateBadge } from "@/views/event-list/components/EventStateBadge";
 import { formatEventDate } from "@/utils/formatters";
 import type { EventState } from "@/data/types/event.types";
 
-export const EventPreviewCard = ({
-  event,
-  thumbnailPreview,
-  price,
-  onThumbnailClick,
-}: {
-  event: {
-    title: string;
-    description?: string;
-    scheduledAt?: string;
-    state: EventState;
-  };
+type EventPreview = {
+  title: string;
+  description?: string;
+  scheduledAt?: string;
+  state: EventState;
+};
+
+type Props = {
+  event: EventPreview;
   thumbnailPreview: string | null;
   price: number | null;
   onThumbnailClick: () => void;
-}) => (
+};
+
+export const EventPreviewCard = ({ event, thumbnailPreview, price, onThumbnailClick }: Props) => (
   <div className="rounded-lg border text-left overflow-hidden">
     {thumbnailPreview ? (
       <div className="aspect-video w-full overflow-hidden">

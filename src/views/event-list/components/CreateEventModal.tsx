@@ -15,11 +15,11 @@ import {
 } from "@/views/shadcn/form";
 import { Input } from "@/views/shadcn/input";
 import { Button } from "@/views/shadcn/button";
-import { useEventListViewModel } from "../useEventList";
+import { useEventList } from "../useEventList";
 
 export const CreateEventModal = () => {
   const { activeModal, form, onSubmit, isPending, handleOpenChange } =
-    useEventListViewModel();
+    useEventList();
 
   return (
     <Dialog

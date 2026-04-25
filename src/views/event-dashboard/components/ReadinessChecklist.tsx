@@ -14,8 +14,6 @@ type Props = {
   thumbnailPreview: string | null;
   onThumbnailSelect: () => void;
   onThumbnailClear: () => void;
-  onThumbnailFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  thumbnailInputId: string;
   onPriceSet: (price: number) => void;
 };
 
@@ -39,8 +37,6 @@ export const ReadinessChecklist = ({
   thumbnailPreview,
   onThumbnailSelect,
   onThumbnailClear,
-  onThumbnailFileChange,
-  thumbnailInputId,
   onPriceSet,
 }: Props) => {
   const [priceValue, setPriceValue] = useState("");
@@ -137,13 +133,6 @@ export const ReadinessChecklist = ({
       </ControlRow>
 
       <ControlRow label="Event Thumbnail">
-        <input
-          id={thumbnailInputId}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={onThumbnailFileChange}
-        />
         {thumbnailPreview ? (
           <div className="flex items-center gap-2">
             <img

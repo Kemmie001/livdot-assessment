@@ -7,7 +7,7 @@ import { CreateEventPayloadSchema } from "@/data/schemas/event.schema";
 import { useCreateEvent } from "@/data/queries/useCreateEvent";
 import { useNavigate } from "@tanstack/react-router";
 
-export const useEventListViewModel = () => {
+export const useEventList = () => {
   const { data: events, isLoading, isError } = useEvents();
   const openModal = useUiStore((s) => s.openModal);
   const navigate = useNavigate();

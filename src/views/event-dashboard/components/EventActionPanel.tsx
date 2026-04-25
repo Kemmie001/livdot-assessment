@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Loader2, Radio } from "lucide-react";
 import { Button } from "@/views/shadcn/button";
 import {
@@ -12,6 +11,7 @@ import { Input } from "@/views/shadcn/input";
 import { REQUIREMENT_META } from "@/constants/readinessRequirements";
 import { STATE_DESCRIPTIONS } from "@/constants/eventLifecycle";
 import type { AvailableAction, EventState } from "@/data/types/event.types";
+import { useEventActionPanel } from "./useEventActionPanel";
 
 type Props = {
   action: AvailableAction | null;
@@ -26,11 +26,6 @@ export const EventActionPanel = ({
   scheduledAt,
   onTransition,
 }: Props) => {
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [datePart, setDatePart] = useState("");
-  const [timePart, setTimePart] = useState("");
-
   if (!action) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -38,37 +33,42 @@ export const EventActionPanel = ({
       </p>
     );
   }
+  return (
+    <ActiveActionPanel
+      action={action}
+      isPending={isPending}
+      scheduledAt={scheduledAt}
+      onTransition={onTransition}
+    />
+  );
+};
 
-  const isScheduleAction = action.targetState === "scheduled";
-  const needsDate = isScheduleAction && !scheduledAt;
+type ActiveProps = {
+  action: AvailableAction;
+  isPending: boolean;
+  scheduledAt?: string;
+  onTransition: (targetState: EventState, scheduledAt?: string) => void;
+};
 
-  const handleClick = () => {
-    if (needsDate) {
-      setDatePickerOpen(true);
-    } else if (action.requiresConfirmation) {
-      setConfirmOpen(true);
-    } else {
-      onTransition(action.targetState);
-    }
-  };
+const ActiveActionPanel = ({
+  action,
+  isPending,
+  scheduledAt,
+  onTransition,
+}: ActiveProps) => {
+  const vm = useEventActionPanel({
+    action,
+    scheduledAt,
+    onTransition,
+  });
 
-  const handleConfirm = () => {
-    setConfirmOpen(false);
-    onTransition(action.targetState);
-  };
-
-  const handleDateConfirm = () => {
-    if (!datePart) return;
-    const iso = timePart
-      ? new Date(`${datePart}T${timePart}`).toISOString()
-      : new Date(`${datePart}T00:00:00`).toISOString();
-    setDatePickerOpen(false);
-    onTransition(action.targetState, iso);
-  };
-
-  const blockedReason = action.blockedReason;
-  const isGoLive = action.targetState === "live";
-  const today = new Date().toISOString().split("T")[0];
+  const { blockedReason } = action;
+  const description =
+    blockedReason?.type === "host_action_required"
+      ? `Complete: ${REQUIREMENT_META[blockedReason.requirement.key].label}`
+      : blockedReason?.type === "awaiting_external"
+        ? `Waiting for crew: ${REQUIREMENT_META[blockedReason.requirement.key].label}`
+        : STATE_DESCRIPTIONS[action.targetState];
 
   return (
     <>
@@ -76,30 +76,24 @@ export const EventActionPanel = ({
         <Button
           className="shrink-0 gap-2"
           disabled={action.blocked || isPending}
-          onClick={handleClick}
+          onClick={vm.handleClick}
           variant={
             action.targetState === "completed" ? "destructive" : "default"
           }
         >
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
-          ) : isGoLive ? (
+          ) : vm.isGoLive ? (
             <Radio className="h-4 w-4" />
           ) : null}
           {isPending ? "Processing…" : action.label}
         </Button>
 
-        <p className="text-sm text-muted-foreground">
-          {blockedReason?.type === "host_action_required"
-            ? `Complete: ${REQUIREMENT_META[blockedReason.requirement.key].label}`
-            : blockedReason?.type === "awaiting_external"
-              ? `Waiting for crew: ${REQUIREMENT_META[blockedReason.requirement.key].label}`
-              : STATE_DESCRIPTIONS[action.targetState]}
-        </p>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
 
       {/* Date picker dialog for scheduling without an existing date */}
-      <Dialog open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+      <Dialog open={vm.datePickerOpen} onOpenChange={vm.setDatePickerOpen}>
         <DialogContent className="sm:max-w-sm overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-black">Set Event Date</DialogTitle>
@@ -110,25 +104,28 @@ export const EventActionPanel = ({
           <div className="grid grid-cols-2 gap-2 mt-2">
             <Input
               type="date"
-              min={today}
-              value={datePart}
-              onChange={(e) => setDatePart(e.target.value)}
+              min={vm.today}
+              value={vm.datePart}
+              onChange={(e) => vm.setDatePart(e.target.value)}
             />
             <Input
               type="time"
-              value={timePart}
-              disabled={!datePart}
-              onChange={(e) => setTimePart(e.target.value)}
+              value={vm.timePart}
+              disabled={!vm.datePart}
+              onChange={(e) => vm.setTimePart(e.target.value)}
             />
           </div>
           <div className="flex gap-2 mt-2">
-            <Button variant="outline" onClick={() => setDatePickerOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => vm.setDatePickerOpen(false)}
+            >
               Cancel
             </Button>
             <Button
               className="flex-1"
-              disabled={!datePart}
-              onClick={handleDateConfirm}
+              disabled={!vm.datePart}
+              onClick={vm.handleDateConfirm}
             >
               Schedule Event
             </Button>
@@ -137,7 +134,7 @@ export const EventActionPanel = ({
       </Dialog>
 
       {/* End broadcast confirmation */}
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <Dialog open={vm.confirmOpen} onOpenChange={vm.setConfirmOpen}>
         <DialogContent className="sm:max-w-sm overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-black">End Broadcast?</DialogTitle>
@@ -147,13 +144,13 @@ export const EventActionPanel = ({
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-2 mt-2">
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+            <Button variant="outline" onClick={() => vm.setConfirmOpen(false)}>
               Cancel
             </Button>
             <Button
               variant="destructive"
               className="flex-1"
-              onClick={handleConfirm}
+              onClick={vm.handleConfirm}
             >
               End Broadcast
             </Button>
