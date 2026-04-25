@@ -32,9 +32,10 @@ export const STATE_DESCRIPTIONS: Record<EventState, string> = {
   draft: "Event created, not yet scheduled",
   scheduled: "Date set, requirements incomplete",
   ready_for_streaming: "All requirements satisfied",
-  live: "Broadcasting to ticket holders",
+  live: "Broadcast to ticket holders",
   completed: "Broadcast ended",
-  replay_available: "Catch-up viewing enabled",
+  replay_available:
+    "Event has ended and is now available as a replay for those who missed it or wish to watch again.",
 };
 export const STATUS_ITEMS = [
   {
