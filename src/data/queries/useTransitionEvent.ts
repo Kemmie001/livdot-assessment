@@ -11,9 +11,9 @@ export const useTransitionEvent = (eventId: string) => {
   const { setPending, clearPending } = useOptimisticStore();
 
   return useMutation({
-    mutationFn: (targetState: EventState) =>
-      eventService.transition(eventId, targetState),
-    onMutate: (targetState) => {
+    mutationFn: ({ targetState, scheduledAt }: { targetState: EventState; scheduledAt?: string }) =>
+      eventService.transition(eventId, targetState, scheduledAt),
+    onMutate: ({ targetState }) => {
       setPending(eventId, targetState);
     },
     onSuccess: (event) => {

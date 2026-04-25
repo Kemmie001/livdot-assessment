@@ -6,15 +6,16 @@ import {
   getRequirementsByOwner,
   getCompletionCount,
 } from '../readinessUtils'
+import { RequirementKey, RequirementOwner } from '@/data/types/readiness.types'
 import type { ReadinessReport } from '@/data/types/readiness.types'
 
 const fullReport: ReadinessReport = {
   eventId: '00000000-0000-0000-0000-000000000001',
   allSatisfied: true,
   requirements: [
-    { key: 'ticket_pricing_configured', satisfied: true, owner: 'host' },
-    { key: 'production_crew_assigned', satisfied: true, owner: 'crew' },
-    { key: 'streaming_ingest_configured', satisfied: true, owner: 'crew' },
+    { key: RequirementKey.TicketPricingConfigured, satisfied: true, owner: RequirementOwner.Host },
+    { key: RequirementKey.ProductionCrewAssigned, satisfied: true, owner: RequirementOwner.Crew },
+    { key: RequirementKey.StreamingIngestConfigured, satisfied: true, owner: RequirementOwner.Crew },
   ],
 }
 
@@ -22,9 +23,9 @@ const partialReport: ReadinessReport = {
   eventId: '00000000-0000-0000-0000-000000000001',
   allSatisfied: false,
   requirements: [
-    { key: 'ticket_pricing_configured', satisfied: true, owner: 'host' },
-    { key: 'production_crew_assigned', satisfied: false, owner: 'crew' },
-    { key: 'streaming_ingest_configured', satisfied: false, owner: 'crew' },
+    { key: RequirementKey.TicketPricingConfigured, satisfied: true, owner: RequirementOwner.Host },
+    { key: RequirementKey.ProductionCrewAssigned, satisfied: false, owner: RequirementOwner.Crew },
+    { key: RequirementKey.StreamingIngestConfigured, satisfied: false, owner: RequirementOwner.Crew },
   ],
 }
 
@@ -32,9 +33,9 @@ const emptyReport: ReadinessReport = {
   eventId: '00000000-0000-0000-0000-000000000001',
   allSatisfied: false,
   requirements: [
-    { key: 'ticket_pricing_configured', satisfied: false, owner: 'host' },
-    { key: 'production_crew_assigned', satisfied: false, owner: 'crew' },
-    { key: 'streaming_ingest_configured', satisfied: false, owner: 'crew' },
+    { key: RequirementKey.TicketPricingConfigured, satisfied: false, owner: RequirementOwner.Host },
+    { key: RequirementKey.ProductionCrewAssigned, satisfied: false, owner: RequirementOwner.Crew },
+    { key: RequirementKey.StreamingIngestConfigured, satisfied: false, owner: RequirementOwner.Crew },
   ],
 }
 
@@ -64,7 +65,7 @@ describe('getSatisfiedRequirements', () => {
   it('returns only satisfied requirements', () => {
     const satisfied = getSatisfiedRequirements(partialReport)
     expect(satisfied).toHaveLength(1)
-    expect(satisfied[0].key).toBe('ticket_pricing_configured')
+    expect(satisfied[0].key).toBe(RequirementKey.TicketPricingConfigured)
   })
 
   it('returns all when fully satisfied', () => {

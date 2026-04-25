@@ -15,6 +15,7 @@ export const EventSchema = z.object({
   description: z.string().optional(),
   state: EventStateSchema,
   scheduledAt: z.string().datetime().optional(),
+  thumbnailUrl: z.string().url().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 })

@@ -1,5 +1,6 @@
 import { VALID_TRANSITIONS } from '@/constants/eventLifecycle'
 import type { EventState, AvailableAction, BlockedReason } from '@/data/types/event.types'
+import { RequirementOwner } from '@/data/types/readiness.types'
 import type { ReadinessReport, Requirement } from '@/data/types/readiness.types'
 import { REQUIREMENT_META } from '@/constants/readinessRequirements'
 
@@ -21,7 +22,7 @@ const getBlockedReasonsForReadiness = (report: ReadinessReport): BlockedReason[]
       return {
         type: 'awaiting_external',
         requirement: r,
-        owner: 'crew',
+        owner: RequirementOwner.Crew,
       }
     })
 

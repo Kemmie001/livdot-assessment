@@ -1,29 +1,29 @@
-import type { RequirementKey, RequirementOwner } from '@/data/types/readiness.types'
+import { RequirementKey, RequirementOwner } from "@/data/types/readiness.types";
 
 type RequirementMeta = {
-  label: string
-  owner: RequirementOwner
-  description: string
-  actionLabel: string | null
-}
+  label: string;
+  owner: typeof RequirementOwner[keyof typeof RequirementOwner];
+  description: string;
+  actionLabel: string | null;
+};
 
 export const REQUIREMENT_META: Record<RequirementKey, RequirementMeta> = {
-  ticket_pricing_configured: {
-    label: 'Ticket pricing configured',
-    owner: 'host',
-    description: 'Set ticket price and availability for this event',
-    actionLabel: 'Configure pricing',
+  [RequirementKey.TicketPricingConfigured]: {
+    label: "Set up ticketing",
+    owner: RequirementOwner.Host,
+    description: "Define your ticket structure and access rules",
+    actionLabel: "Set up ticketing",
   },
-  production_crew_assigned: {
-    label: 'Production crew assigned',
-    owner: 'crew',
-    description: 'A production crew must accept assignment for this event',
+  [RequirementKey.ProductionCrewAssigned]: {
+    label: "Assign production crew",
+    owner: RequirementOwner.Crew,
+    description: "Ensure your technical team has accepted the assignment",
     actionLabel: null,
   },
-  streaming_ingest_configured: {
-    label: 'Streaming ingest configured',
-    owner: 'crew',
-    description: 'Production crew must configure the stream ingest settings',
+  [RequirementKey.StreamingIngestConfigured]: {
+    label: "Configure streaming ingest",
+    owner: RequirementOwner.Crew,
+    description: "Production crew must configure the stream ingest settings",
     actionLabel: null,
   },
-}
+};

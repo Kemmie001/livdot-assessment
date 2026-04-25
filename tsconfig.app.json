@@ -20,7 +20,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
+    "strictNullChecks": true,
     "paths": {
       "@/*": ["./src/*"]
     }
